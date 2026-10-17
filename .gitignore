@@ -1,0 +1,43 @@
+# Local state and credentials
+/data/
+.env
+.env.*
+*.log
+*.log.*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Dependencies and generated packages
+/.venv/
+/.cache/
+/_internal/
+/build/
+/dist/
+/assets/playall.png
+/assets/playall.ico
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.spec
+*.exe
+*.dll
+*.pdb
+*.zip
+/mods/aistalt-bridge/loader/
+/mods/aistalt-bridge/build.json
+
+# Private handoffs and local QA artifacts
+/docs/handoff*.md
+/docs/next-human-checks.md
+/docs/issues/
+/screenshots/
+*.dmp
+*.bak
+
+# Editors and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

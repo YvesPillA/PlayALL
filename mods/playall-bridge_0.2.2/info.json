@@ -1,0 +1,11 @@
+{
+  "name": "playall-bridge",
+  "version": "0.2.2",
+  "title": "PlayALL Local Bridge",
+  "author": "PlayALL",
+  "factorio_version": "2.0",
+  "description": "Local, explicit control of the existing single-player character. Connecting does not start AI play.",
+  "dependencies": [
+    "base >= 2.0.77"
+  ]
+}
