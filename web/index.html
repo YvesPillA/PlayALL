@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#edf2f6">
+  <title>PlayALL · AI 游戏终端</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="PlayALL 首页"><img src="/favicon.svg" alt="" width="38" height="38"><span>PlayALL<small>AI 游戏终端</small></span></a>
+    <div class="top-actions"><span class="local-tag"><span class="connection-dot"></span><span id="connection">本机运行</span></span><button class="text-button" id="history-button">最近游戏</button><button class="settings-trigger" id="settings-button"><span aria-hidden="true">⚙</span> 设置</button></div>
+  </header>
+  <main>
+    <div class="intro"><div><h1>下一局，交给 AI。</h1><p>选好搭档和游戏，告诉它想做什么。你只管看。</p></div><div class="session-badge" id="status-badge"><span></span><b>准备就绪</b></div></div>
+    <div class="workspace">
+      <aside class="control-panel" aria-label="游戏控制">
+        <div class="panel-heading"><h2>准备出发</h2><span class="small-muted">三步就好</span></div>
+        <div class="field"><label for="provider"><span class="step">1</span>谁来玩</label><div class="select-wrap"><select id="provider"><option value="deepseek">DeepSeek</option><option value="custom">其他兼容 AI</option><option value="rehearsal">免费演练（固定脚本）</option></select></div><div id="provider-note" class="field-note"></div></div>
+        <div class="field"><label for="game"><span class="step">2</span>玩什么</label><div class="select-wrap"><select id="game"><option value="factorio">Factorio · 异星工厂</option><option value="sandbox">采矿练习场 · 内置小游戏</option></select></div><div id="game-note" class="field-note"></div></div>
+        <div class="field goal-field"><label for="goal"><span class="step">3</span>这局的目标</label><textarea id="goal" rows="3" maxlength="2000" placeholder="例如：建立采矿与冶炼，生产 10 块铁板。"></textarea><div class="goal-presets"><button data-goal="建立采矿与冶炼，实际生产 10 块铁板。">炼出第一炉铁</button><button data-goal="建立一条由燃烧采矿机驱动的自动采矿和铁板冶炼线，保持持续生产。">自动化起步</button></div></div>
+        <div class="start-area"><button id="start-button" class="primary"><span class="play-icon" aria-hidden="true"></span><span id="start-label">开始，让 AI 来玩</span></button><div class="running-controls" id="running-controls" hidden><button class="primary" id="pause-button">暂停</button><button class="stop-button" id="stop-button">停止并保存</button></div><button class="rehearsal-button" id="rehearsal-button">先免费试运行<span>无需 API Key</span></button><p class="budget-caption" id="budget-caption">每局最多 40 轮，费用估算上限 $0.25</p></div>
+        <div class="save-choice"><label><input type="checkbox" id="new-world"> 开一张新的专用地图</label><small>默认接着上次玩；原游戏存档独立保留。</small></div>
+      </aside>
+      <section class="stage-panel" aria-label="游戏现场">
+        <div class="stage-heading"><div><span class="stage-dot" id="stage-dot"></span><h2 id="stage-title">游戏现场</h2><span class="stage-source" id="stage-source">等待连接</span></div><button class="text-button" id="watch-button" disabled>打开游戏画面 <span aria-hidden="true">↗</span></button></div>
+        <div class="map-container"><canvas id="world-map" aria-label="游戏现场地图示意，显示工程师、矿区和建筑"></canvas><div class="empty-stage" id="empty-stage"><div class="engineer-mark" aria-hidden="true"><span></span><i></i></div><h3>工程师正在等你。</h3><p>开始后，这里会显示它的位置、矿区与建筑。</p><span>真实进度，随时可以暂停。</span></div><div class="map-label" id="map-label">现场示意图</div><div class="map-controls"><button id="zoom-out" aria-label="缩小地图">−</button><button id="zoom-reset" aria-label="重置地图缩放">◎</button><button id="zoom-in" aria-label="放大地图">＋</button></div></div>
+        <div class="map-legend"><span><i class="legend-bot"></i>工程师</span><span><i class="legend-iron"></i>铁矿</span><span><i class="legend-copper"></i>铜矿</span><span><i class="legend-coal"></i>煤矿</span><span><i class="legend-building"></i>建筑</span><span class="coordinates" id="coordinates">尚未进入游戏</span></div>
+        <div class="mission-strip"><div class="mission-symbol" aria-hidden="true">◇</div><div><span id="mission-label">本局状态</span><p id="status-message" role="status">选好 AI 和游戏，开始第一局。</p></div><div class="production" id="production" hidden><b id="plate-count">0</b><span>铁板产量</span></div></div>
+      </section>
+    </div>
+    <div class="detail-grid">
+      <section class="activity-panel"><div class="panel-heading"><h2>它正在做什么</h2><span class="small-muted" id="activity-model">行动会实时出现在这里</span></div><div id="activity-feed" class="activity-feed" role="log" aria-live="polite"><div class="activity-empty"><span aria-hidden="true">⌁</span><p>从第一步开始，每个决定都有记录。</p><small>AI 的计划、动作和游戏结果都会显示在这里。</small></div></div></section>
+      <section class="inventory-panel"><div class="panel-heading"><h2>工程师的背包</h2><span class="small-muted" id="inventory-count">未连接</span></div><div id="inventory" class="inventory"><div class="inventory-empty">进入游戏后，物品会出现在这里。</div></div><div class="usage-bar"><div><b id="turn-count">0</b><span>决策轮数</span></div><div><b id="token-count">0</b><span>token 用量</span></div><div><b id="cost-count">$0.000</b><span>费用估算</span></div></div></section>
+    </div>
+    <footer><span>PlayALL · 本地控制，自己做主</span><span>密钥加密保存在本机 <i aria-hidden="true">／</i> <button class="text-button" id="diagnostics-button">连接诊断</button></span></footer>
+  </main>
+  <dialog id="settings-dialog"><form id="settings-form"><div class="dialog-heading"><div><h2>把搭档接进来</h2><p>填好一次，以后直接开始。</p></div><button type="button" class="close-button" data-close="settings-dialog" aria-label="关闭设置">×</button></div><div class="settings-body"><div class="field"><label for="edit-provider">配置哪个 AI</label><select id="edit-provider"><option value="deepseek">DeepSeek</option><option value="custom">其他兼容 AI</option></select></div><div class="field"><label for="api-key">API Key <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noreferrer">去获取 ↗</a></label><input id="api-key" type="password" autocomplete="new-password" spellcheck="false" placeholder="粘贴 API Key"><div class="field-note" id="key-note">密钥只在本机加密保存，不会显示在行动记录里。</div></div><div class="settings-row"><div class="field"><label for="model">模型名称</label><input id="model" list="model-options" spellcheck="false"><datalist id="model-options"><option value="deepseek-flash"><option value="deepseek-v4-pro"><option value="deepseek-chat"></datalist></div><button class="secondary probe-button" type="button" id="probe-button">测试连接</button></div><div id="probe-result" class="inline-result" role="status" hidden></div><details><summary>接口地址与模型价格</summary><div class="field"><label for="base-url">接口地址</label><input id="base-url" type="url" spellcheck="false"></div><div class="settings-row"><div class="field"><label for="input-price">输入 / 百万 token（$）</label><input id="input-price" type="number" min="0" max="1000" step="0.001"></div><div class="field"><label for="output-price">输出 / 百万 token（$）</label><input id="output-price" type="number" min="0" max="1000" step="0.001"></div></div><p class="field-note">费用按这里的价格保守估算，实际账单以服务商为准。更换模型时请核对价格。</p></details><div class="settings-divider"></div><div class="field"><label for="factorio-path">Factorio 的位置</label><div class="path-input"><input id="factorio-path" spellcheck="false" placeholder="…\Factorio\bin\x64\factorio.exe"><button class="secondary" type="button" id="pick-factorio">选择文件</button></div><p class="field-note">自动寻找 Steam 安装；使用独立的 AI 专用存档与模组。</p></div><div class="settings-row"><div class="field"><label for="max-turns">每局最多几轮</label><input id="max-turns" type="number" min="1" max="1000" required></div><div class="field"><label for="max-cost">费用估算上限（$）</label><input id="max-cost" type="number" min="0.01" max="100" step="0.01" required></div></div><details><summary>运行节奏与 token 上限</summary><div class="settings-row"><div class="field"><label for="speed">Factorio 运行速度</label><select id="speed"><option value="1">正常速度</option><option value="2">2 倍</option><option value="4">4 倍</option><option value="8">8 倍</option></select></div><div class="field"><label for="max-tokens">每局 token 上限</label><input id="max-tokens" type="number" min="1000" max="2000000" step="1000"></div></div></details></div><div class="dialog-footer"><p id="settings-message">修改后的配置在下一局生效。</p><button class="primary" id="save-settings" type="submit">保存设置</button></div></form></dialog>
+  <dialog id="history-dialog"><div class="dialog-heading"><div><h2>最近的游戏</h2><p>进度保存在本机，随时接着玩。</p></div><button class="close-button" data-close="history-dialog" aria-label="关闭游戏记录">×</button></div><div id="history-list" class="history-list"></div></dialog>
+  <dialog id="diagnostics-dialog"><div class="dialog-heading"><div><h2>连接诊断</h2><p>检查本机准备得怎么样。</p></div><button class="close-button" data-close="diagnostics-dialog" aria-label="关闭诊断">×</button></div><div id="diagnostics-list" class="diagnostics-list"></div></dialog>
+  <div id="toast" class="toast" role="alert" hidden></div>
+</body>
+</html>
