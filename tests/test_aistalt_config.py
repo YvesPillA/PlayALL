@@ -150,12 +150,15 @@ class AistaltStartupConfigTests(unittest.TestCase):
 
     def test_config_replace_failure_restores_binaries_config_and_removes_transaction_backups(self):
         self.write_config(DEFAULT_CONFIG)
+        # Windows can canonicalize temporary-directory aliases. Exercise an
+        # equivalent path spelling so injection does not depend on that spelling.
+        self.config_path = self.config_path.parent / ".." / "config" / self.config_path.name
         before = self.files()
         replace = os.replace
         attempted = []
 
         def fail_configuration(source, destination):
-            if Path(destination) == self.config_path:
+            if Path(destination).resolve() == self.config_path.resolve():
                 attempted.append(Path(source).read_bytes())
                 raise OSError("synthetic startup config commit failure")
             return replace(source, destination)
